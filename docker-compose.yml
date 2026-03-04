@@ -1,0 +1,212 @@
+name: edokafka
+
+services:
+  # KRaft Controller 1000
+  controller-1000:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: my-controller-1000
+    hostname: controller-1000
+    networks:
+      - kafka-network
+    environment:
+      NODE_ID: 1000
+      PROCESS_ROLE: controller
+      CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
+      CONTROLLER_QUORUM_VOTERS: "1000@controller-1000:9093,1001@controller-1001:9093,1002@controller-1002:9093"
+      KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost -Dcom.sun.management.jmxremote.rmi.port=20000"
+      JMX_PORT: 20000
+    ports:
+      - "20000:20000"
+    volumes:
+      - controller-1000-data:/var/lib/kafka/data
+      - ./my-controller.properties:/opt/kafka/config/my-controller.properties:ro
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 9093 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # KRaft Controller 1001
+  controller-1001:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: my-controller-1001
+    hostname: controller-1001
+    networks:
+      - kafka-network
+    environment:
+      NODE_ID: 1001
+      PROCESS_ROLE: controller
+      CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
+      CONTROLLER_QUORUM_VOTERS: "1000@controller-1000:9093,1001@controller-1001:9093,1002@controller-1002:9093"
+      KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost -Dcom.sun.management.jmxremote.rmi.port=20001"
+      JMX_PORT: 20001
+    ports:
+      - "20001:20001"
+    volumes:
+      - controller-1001-data:/var/lib/kafka/data
+      - ./my-controller.properties:/opt/kafka/config/my-controller.properties:ro
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 9093 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # KRaft Controller 1002
+  controller-1002:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: my-controller-1002
+    hostname: controller-1002
+    networks:
+      - kafka-network
+    environment:
+      NODE_ID: 1002
+      PROCESS_ROLE: controller
+      CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
+      CONTROLLER_QUORUM_VOTERS: "1000@controller-1000:9093,1001@controller-1001:9093,1002@controller-1002:9093"
+      KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost -Dcom.sun.management.jmxremote.rmi.port=20002"
+      JMX_PORT: 20002
+    ports:
+      - "20002:20002"
+    volumes:
+      - controller-1002-data:/var/lib/kafka/data
+      - ./my-controller.properties:/opt/kafka/config/my-controller.properties:ro
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 9093 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Kafka Broker 0
+  broker-0:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: my-broker-0
+    hostname: broker-0
+    networks:
+      - kafka-network
+    ports:
+      - "19092:9093"
+      - "19990:19990"
+    environment:
+      NODE_ID: 0
+      PROCESS_ROLE: broker
+      CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
+      CONTROLLER_QUORUM_VOTERS: "1000@controller-1000:9093,1001@controller-1001:9093,1002@controller-1002:9093"
+      KAFKA_ADVERTISED_LISTENERS: "INTERBROKER://broker-0:9092,EXTERNAL://localhost:19092"
+      KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost -Dcom.sun.management.jmxremote.rmi.port=19990"
+      JMX_PORT: 19990
+    volumes:
+      - broker-0-data:/var/lib/kafka/data
+      - ./my-broker.properties:/opt/kafka/config/my-broker.properties:ro
+    depends_on:
+      controller-1000:
+        condition: service_healthy
+      controller-1001:
+        condition: service_healthy
+      controller-1002:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 9092 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Kafka Broker 1
+  broker-1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: my-broker-1
+    hostname: broker-1
+    networks:
+      - kafka-network
+    ports:
+      - "19093:9093"
+      - "19991:19991"
+    environment:
+      NODE_ID: 1
+      PROCESS_ROLE: broker
+      CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
+      CONTROLLER_QUORUM_VOTERS: "1000@controller-1000:9093,1001@controller-1001:9093,1002@controller-1002:9093"
+      KAFKA_ADVERTISED_LISTENERS: "INTERBROKER://broker-1:9092,EXTERNAL://localhost:19093"
+      KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost -Dcom.sun.management.jmxremote.rmi.port=19991"
+      JMX_PORT: 19991
+    volumes:
+      - broker-1-data:/var/lib/kafka/data
+      - ./my-broker.properties:/opt/kafka/config/my-broker.properties:ro
+    depends_on:
+      controller-1000:
+        condition: service_healthy
+      controller-1001:
+        condition: service_healthy
+      controller-1002:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 9092 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Kafka Broker 2
+  broker-2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: my-broker-2
+    hostname: broker-2
+    networks:
+      - kafka-network
+    ports:
+      - "19094:9093"
+      - "19992:19992"
+    environment:
+      NODE_ID: 2
+      PROCESS_ROLE: broker
+      CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
+      CONTROLLER_QUORUM_VOTERS: "1000@controller-1000:9093,1001@controller-1001:9093,1002@controller-1002:9093"
+      KAFKA_ADVERTISED_LISTENERS: "INTERBROKER://broker-2:9092,EXTERNAL://localhost:19094"
+      KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost -Dcom.sun.management.jmxremote.rmi.port=19992"
+      JMX_PORT: 19992
+    volumes:
+      - broker-2-data:/var/lib/kafka/data
+      - ./my-broker.properties:/opt/kafka/config/my-broker.properties:ro
+    depends_on:
+      controller-1000:
+        condition: service_healthy
+      controller-1001:
+        condition: service_healthy
+      controller-1002:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 9092 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  kafka-network:
+    driver: bridge
+    name: kafka-network
+
+volumes:
+  controller-1000-data:
+    name: controller-1000-data
+  controller-1001-data:
+    name: controller-1001-data
+  controller-1002-data:
+    name: controller-1002-data
+  broker-0-data:
+    name: broker-0-data
+  broker-1-data:
+    name: broker-1-data
+  broker-2-data:
+    name: broker-2-data
+
+# Made with Bob
