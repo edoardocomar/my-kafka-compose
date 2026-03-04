@@ -128,7 +128,12 @@ if [ "$PROCESS_ROLE" = "broker" ]; then
 fi
 
 # Start Kafka
+# Note: kafka-server-start.sh will automatically enable debug mode
+# if KAFKA_DEBUG env var is set, using KAFKA_DEBUG_OPTS
 echo "Starting Kafka server..."
+if [ "$KAFKA_DEBUG" = "true" ]; then
+    echo "Debug mode will be enabled on port 5005"
+fi
 exec $KAFKA_HOME/bin/kafka-server-start.sh $CONFIG_FILE
 
 # Made with Bob
