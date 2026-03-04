@@ -16,10 +16,18 @@ docker-compose build
 docker-compose up -d
 
 # 4. Verify all services
+# Should see 6 containers: 3 controllers and 3 brokers, all "healthy"
 docker-compose ps
 
 # 5. Check new image names
 docker images | grep edokafka
+
+# Stop all containers (preserves data)
+docker-compose stop
+
+# Or stop and remove containers (preserves data volumes)
+docker-compose down
+
 ```
 
 Wait for all services to show "started" in the logs (approximately 30-60 seconds).
@@ -37,9 +45,7 @@ Wait for all services to show "started" in the logs (approximately 30-60 seconds
    docker-compose up -d
    ```
 
-### How to Connect to JMX
-
-Using JConsole:
+### Using JConsole:
 
 ```bash
 # Controllers
@@ -53,14 +59,6 @@ jconsole localhost:19991  # broker-1
 jconsole localhost:19992  # broker-2
 ```
 
-## Verify the Cluster
-
-```bash
-# Check all containers are running and healthy
-docker-compose ps
-
-# Should see 6 containers: 3 controllers and 3 brokers, all "healthy"
-```
 
 ## Access from macOS
 
@@ -71,32 +69,11 @@ If you have Kafka tools installed on your Mac:
 kafka-topics.sh --bootstrap-server localhost:19092,localhost:19093,localhost:19094 --list
 ```
 
-## Stop the Cluster
-
-```bash
-# Stop all containers (preserves data)
-docker-compose stop
-
-# Or stop and remove containers (preserves data volumes)
-docker-compose down
-```
-
-## Troubleshooting
-
-### Try rebuilding
+### Rebuilding
 
 ```bash
 docker-compose down -v
 docker-compose up -d --build
-```
-
-### Port conflicts
-
-```bash
-# Find what's using the port
-lsof -i :19092
-
-# Kill the process or change ports in docker-compose.yml
 ```
 
 ### Access Docker Desktop VM on macOS
@@ -120,7 +97,7 @@ cd /var/lib/docker/volumes/broker-0-data/_data
 ls -la
 ```
 
-### Clean up
+### Docker Clean up
 
 | Command | What it removes |
 |---|---|
