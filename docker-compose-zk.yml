@@ -1,0 +1,207 @@
+name: edokafka-zk
+
+# Debug configuration - change '' to 'true' to enable debugging
+x-debug-enabled: &debug-enabled ""
+x-debug-port: &debug-port "*:5005"
+
+x-zk-connect: &zk-connect "zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181"
+
+services:
+  # ZooKeeper 1
+  zookeeper-1:
+    build:
+      context: .
+      dockerfile: Dockerfile.zk
+    container_name: my-zookeeper-1
+    hostname: zookeeper-1
+    networks:
+      - kafka-zk-network
+    environment:
+      NODE_ID: 1
+      PROCESS_ROLE: zookeeper
+    ports:
+      - "12181:2181"
+    volumes:
+      - zookeeper-1-data:/var/lib/zookeeper/data
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 2181 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ZooKeeper 2
+  zookeeper-2:
+    build:
+      context: .
+      dockerfile: Dockerfile.zk
+    container_name: my-zookeeper-2
+    hostname: zookeeper-2
+    networks:
+      - kafka-zk-network
+    environment:
+      NODE_ID: 2
+      PROCESS_ROLE: zookeeper
+    ports:
+      - "12182:2181"
+    volumes:
+      - zookeeper-2-data:/var/lib/zookeeper/data
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 2181 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ZooKeeper 3
+  zookeeper-3:
+    build:
+      context: .
+      dockerfile: Dockerfile.zk
+    container_name: my-zookeeper-3
+    hostname: zookeeper-3
+    networks:
+      - kafka-zk-network
+    environment:
+      NODE_ID: 3
+      PROCESS_ROLE: zookeeper
+    ports:
+      - "12183:2181"
+    volumes:
+      - zookeeper-3-data:/var/lib/zookeeper/data
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 2181 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Kafka Broker 0
+  broker-0:
+    build:
+      context: .
+      dockerfile: Dockerfile.zk
+    container_name: my-zk-broker-0
+    hostname: broker-0
+    networks:
+      - kafka-zk-network
+    ports:
+      - "29092:9093"
+      - "29990:29990"
+      - "5010:5005"
+    environment:
+      NODE_ID: 0
+      PROCESS_ROLE: broker
+      ZOOKEEPER_CONNECT: *zk-connect
+      KAFKA_ADVERTISED_LISTENERS: "INTERBROKER://broker-0:9092,EXTERNAL://localhost:29092"
+      KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost -Dcom.sun.management.jmxremote.rmi.port=29990"
+      JMX_PORT: 29990
+      KAFKA_DEBUG: *debug-enabled
+      JAVA_DEBUG_PORT: *debug-port
+    volumes:
+      - zk-broker-0-data:/var/lib/kafka/data
+      - ./my-broker-zk.properties:/opt/kafka/config/my-broker-zk.properties:ro
+    depends_on:
+      zookeeper-1:
+        condition: service_healthy
+      zookeeper-2:
+        condition: service_healthy
+      zookeeper-3:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 9092 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Kafka Broker 1
+  broker-1:
+    build:
+      context: .
+      dockerfile: Dockerfile.zk
+    container_name: my-zk-broker-1
+    hostname: broker-1
+    networks:
+      - kafka-zk-network
+    ports:
+      - "29093:9093"
+      - "29991:29991"
+      - "5011:5005"
+    environment:
+      NODE_ID: 1
+      PROCESS_ROLE: broker
+      ZOOKEEPER_CONNECT: *zk-connect
+      KAFKA_ADVERTISED_LISTENERS: "INTERBROKER://broker-1:9092,EXTERNAL://localhost:29093"
+      KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost -Dcom.sun.management.jmxremote.rmi.port=29991"
+      JMX_PORT: 29991
+      KAFKA_DEBUG: *debug-enabled
+      JAVA_DEBUG_PORT: *debug-port
+    volumes:
+      - zk-broker-1-data:/var/lib/kafka/data
+      - ./my-broker-zk.properties:/opt/kafka/config/my-broker-zk.properties:ro
+    depends_on:
+      zookeeper-1:
+        condition: service_healthy
+      zookeeper-2:
+        condition: service_healthy
+      zookeeper-3:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 9092 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Kafka Broker 2
+  broker-2:
+    build:
+      context: .
+      dockerfile: Dockerfile.zk
+    container_name: my-zk-broker-2
+    hostname: broker-2
+    networks:
+      - kafka-zk-network
+    ports:
+      - "29094:9093"
+      - "29992:29992"
+      - "5012:5005"
+    environment:
+      NODE_ID: 2
+      PROCESS_ROLE: broker
+      ZOOKEEPER_CONNECT: *zk-connect
+      KAFKA_ADVERTISED_LISTENERS: "INTERBROKER://broker-2:9092,EXTERNAL://localhost:29094"
+      KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost -Dcom.sun.management.jmxremote.rmi.port=29992"
+      JMX_PORT: 29992
+      KAFKA_DEBUG: *debug-enabled
+      JAVA_DEBUG_PORT: *debug-port
+    volumes:
+      - zk-broker-2-data:/var/lib/kafka/data
+      - ./my-broker-zk.properties:/opt/kafka/config/my-broker-zk.properties:ro
+    depends_on:
+      zookeeper-1:
+        condition: service_healthy
+      zookeeper-2:
+        condition: service_healthy
+      zookeeper-3:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 9092 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  kafka-zk-network:
+    driver: bridge
+    name: kafka-zk-network
+
+volumes:
+  zookeeper-1-data:
+    name: zookeeper-1-data
+  zookeeper-2-data:
+    name: zookeeper-2-data
+  zookeeper-3-data:
+    name: zookeeper-3-data
+  zk-broker-0-data:
+    name: zk-broker-0-data
+  zk-broker-1-data:
+    name: zk-broker-1-data
+  zk-broker-2-data:
+    name: zk-broker-2-data

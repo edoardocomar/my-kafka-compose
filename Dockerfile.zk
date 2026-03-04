@@ -1,0 +1,26 @@
+FROM eclipse-temurin:21-jre-alpine
+
+RUN apk add --no-cache \
+    bash \
+    curl \
+    netcat-openbsd
+
+WORKDIR /opt
+
+COPY kafka_2.13-3.9.2.tgz /tmp/kafka.tgz
+
+RUN tar -xzf /tmp/kafka.tgz -C /opt && \
+    mv /opt/kafka_2.13-3.9.2 /opt/kafka && \
+    rm /tmp/kafka.tgz
+
+ENV KAFKA_HOME=/opt/kafka
+ENV PATH=$PATH:$KAFKA_HOME/bin
+
+RUN mkdir -p /var/lib/kafka/data /var/lib/zookeeper/data /var/log/kafka
+
+COPY entrypoint-zk.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+WORKDIR /opt/kafka
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

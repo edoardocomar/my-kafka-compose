@@ -116,3 +116,34 @@ ls -la
 | `docker system prune` | Dangling images, stopped containers, unused networks |
 | `docker system prune -a` | All images not used by a running container |
 | `docker builder prune` | Only the build cache (layers from `docker build`) |
+
+
+### zookeeper version
+
+  Dockerfile.zk — same structure as the KRaft one but uses kafka_2.13-3.9.2.tgz and adds /var/lib/zookeeper/data
+
+  entrypoint-zk.sh — handles two roles:
+  - zookeeper: writes the myid file and generates zoo.cfg with a 3-node ensemble (server.1/2/3)
+  - broker: generates server.properties with zookeeper.connect instead of KRaft settings
+
+  docker-compose-zk.yml (compose name edokafka-zk, separate network/volumes):
+
+  ┌─────────────────┬───────────────────────────────────────┐
+  │     Service     │            External ports             │
+  ├─────────────────┼───────────────────────────────────────┤
+  │ zookeeper-1/2/3 │ client: 12181/12182/12183             │
+  ├─────────────────┼───────────────────────────────────────┤
+  │ broker-0        │ Kafka: 29092, JMX: 29990, debug: 5010 │
+  ├─────────────────┼───────────────────────────────────────┤
+  │ broker-1        │ Kafka: 29093, JMX: 29991, debug: 5011 │
+  ├─────────────────┼───────────────────────────────────────┤
+  │ broker-2        │ Kafka: 29094, JMX: 29992, debug: 5012 │
+  └─────────────────┴───────────────────────────────────────┘
+
+  Brokers depends_on all 3 ZK nodes being healthy before starting.
+
+  To run:
+  docker compose -f docker-compose-zk.yml up -d --build
+
+  To access from macOS:
+  kafka-topics.sh --bootstrap-server localhost:29092,localhost:29093,localhost:29094 --list
