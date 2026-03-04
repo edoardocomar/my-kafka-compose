@@ -1,7 +1,7 @@
 name: edokafka
 
-# Debug configuration - change 'false' to 'true' to enable debugging
-x-debug-enabled: &debug-enabled false
+# Debug configuration - change '' to 'true' to enable debugging
+x-debug-enabled: &debug-enabled ""
 x-debug-port: &debug-port "*:5005"
 
 services:
