@@ -59,6 +59,17 @@ jconsole localhost:19991  # broker-1
 jconsole localhost:19992  # broker-2
 ```
 
+### Source Debugging
+
+JVMs are started with debug enabled
+Service	Port
+broker-0	5010	Debug Kafka Broker-0
+broker-1	5011	Debug Kafka Broker-1
+broker-2	5012	Debug Kafka Broker-2
+controller-1000	5000	Debug Kafka Controller-1000
+controller-1001	5001	Debug Kafka Controller-1001
+controller-1002	5002	Debug Kafka Controller-1002
+
 
 ## Access from macOS
 

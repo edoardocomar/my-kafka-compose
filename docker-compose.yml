@@ -1,5 +1,9 @@
 name: edokafka
 
+# Debug configuration - change 'false' to 'true' to enable debugging
+x-debug-enabled: &debug-enabled false
+x-debug-port: &debug-port "*:5005"
+
 services:
   # KRaft Controller 1000
   controller-1000:
@@ -17,8 +21,11 @@ services:
       CONTROLLER_QUORUM_VOTERS: "1000@controller-1000:9093,1001@controller-1001:9093,1002@controller-1002:9093"
       KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost -Dcom.sun.management.jmxremote.rmi.port=20000"
       JMX_PORT: 20000
+      KAFKA_DEBUG: *debug-enabled
+      JAVA_DEBUG_PORT: *debug-port
     ports:
       - "20000:20000"
+      - "5000:5005"
     volumes:
       - controller-1000-data:/var/lib/kafka/data
       - ./my-controller.properties:/opt/kafka/config/my-controller.properties:ro
@@ -44,8 +51,11 @@ services:
       CONTROLLER_QUORUM_VOTERS: "1000@controller-1000:9093,1001@controller-1001:9093,1002@controller-1002:9093"
       KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost -Dcom.sun.management.jmxremote.rmi.port=20001"
       JMX_PORT: 20001
+      KAFKA_DEBUG: *debug-enabled
+      JAVA_DEBUG_PORT: *debug-port
     ports:
       - "20001:20001"
+      - "5001:5005"
     volumes:
       - controller-1001-data:/var/lib/kafka/data
       - ./my-controller.properties:/opt/kafka/config/my-controller.properties:ro
@@ -71,8 +81,11 @@ services:
       CONTROLLER_QUORUM_VOTERS: "1000@controller-1000:9093,1001@controller-1001:9093,1002@controller-1002:9093"
       KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost -Dcom.sun.management.jmxremote.rmi.port=20002"
       JMX_PORT: 20002
+      KAFKA_DEBUG: *debug-enabled
+      JAVA_DEBUG_PORT: *debug-port
     ports:
       - "20002:20002"
+      - "5002:5005"
     volumes:
       - controller-1002-data:/var/lib/kafka/data
       - ./my-controller.properties:/opt/kafka/config/my-controller.properties:ro
@@ -94,6 +107,7 @@ services:
     ports:
       - "19092:9093"
       - "19990:19990"
+      - "5010:5005"
     environment:
       NODE_ID: 0
       PROCESS_ROLE: broker
@@ -102,6 +116,8 @@ services:
       KAFKA_ADVERTISED_LISTENERS: "INTERBROKER://broker-0:9092,EXTERNAL://localhost:19092"
       KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost -Dcom.sun.management.jmxremote.rmi.port=19990"
       JMX_PORT: 19990
+      KAFKA_DEBUG: *debug-enabled
+      JAVA_DEBUG_PORT: *debug-port
     volumes:
       - broker-0-data:/var/lib/kafka/data
       - ./my-broker.properties:/opt/kafka/config/my-broker.properties:ro
@@ -130,6 +146,7 @@ services:
     ports:
       - "19093:9093"
       - "19991:19991"
+      - "5011:5005"
     environment:
       NODE_ID: 1
       PROCESS_ROLE: broker
@@ -138,6 +155,8 @@ services:
       KAFKA_ADVERTISED_LISTENERS: "INTERBROKER://broker-1:9092,EXTERNAL://localhost:19093"
       KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost -Dcom.sun.management.jmxremote.rmi.port=19991"
       JMX_PORT: 19991
+      KAFKA_DEBUG: *debug-enabled
+      JAVA_DEBUG_PORT: *debug-port
     volumes:
       - broker-1-data:/var/lib/kafka/data
       - ./my-broker.properties:/opt/kafka/config/my-broker.properties:ro
@@ -166,6 +185,7 @@ services:
     ports:
       - "19094:9093"
       - "19992:19992"
+      - "5012:5005"
     environment:
       NODE_ID: 2
       PROCESS_ROLE: broker
@@ -174,6 +194,8 @@ services:
       KAFKA_ADVERTISED_LISTENERS: "INTERBROKER://broker-2:9092,EXTERNAL://localhost:19094"
       KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost -Dcom.sun.management.jmxremote.rmi.port=19992"
       JMX_PORT: 19992
+      KAFKA_DEBUG: *debug-enabled
+      JAVA_DEBUG_PORT: *debug-port
     volumes:
       - broker-2-data:/var/lib/kafka/data
       - ./my-broker.properties:/opt/kafka/config/my-broker.properties:ro
