@@ -27,7 +27,7 @@ services:
       - "20000:20000"
       - "5000:5005"
     volumes:
-      - controller-1000-data:/var/lib/kafka/data
+      - ./data/v4.2.0-KRaft/controller-1000:/var/lib/kafka/data
       - ./my-controller.properties:/opt/kafka/config/my-controller.properties:ro
     healthcheck:
       test: ["CMD-SHELL", "nc -z localhost 9093 || exit 1"]
@@ -57,7 +57,7 @@ services:
       - "20001:20001"
       - "5001:5005"
     volumes:
-      - controller-1001-data:/var/lib/kafka/data
+      - ./data/v4.2.0-KRaft/controller-1001:/var/lib/kafka/data
       - ./my-controller.properties:/opt/kafka/config/my-controller.properties:ro
     healthcheck:
       test: ["CMD-SHELL", "nc -z localhost 9093 || exit 1"]
@@ -87,7 +87,7 @@ services:
       - "20002:20002"
       - "5002:5005"
     volumes:
-      - controller-1002-data:/var/lib/kafka/data
+      - ./data/v4.2.0-KRaft/controller-1002:/var/lib/kafka/data
       - ./my-controller.properties:/opt/kafka/config/my-controller.properties:ro
     healthcheck:
       test: ["CMD-SHELL", "nc -z localhost 9093 || exit 1"]
@@ -119,7 +119,7 @@ services:
       KAFKA_DEBUG: *debug-enabled
       JAVA_DEBUG_PORT: *debug-port
     volumes:
-      - broker-0-data:/var/lib/kafka/data
+      - ./data/v4.2.0-KRaft/broker-0:/var/lib/kafka/data
       - ./my-broker.properties:/opt/kafka/config/my-broker.properties:ro
     depends_on:
       controller-1000:
@@ -158,7 +158,7 @@ services:
       KAFKA_DEBUG: *debug-enabled
       JAVA_DEBUG_PORT: *debug-port
     volumes:
-      - broker-1-data:/var/lib/kafka/data
+      - ./data/v4.2.0-KRaft/broker-1:/var/lib/kafka/data
       - ./my-broker.properties:/opt/kafka/config/my-broker.properties:ro
     depends_on:
       controller-1000:
@@ -197,7 +197,7 @@ services:
       KAFKA_DEBUG: *debug-enabled
       JAVA_DEBUG_PORT: *debug-port
     volumes:
-      - broker-2-data:/var/lib/kafka/data
+      - ./data/v4.2.0-KRaft/broker-2:/var/lib/kafka/data
       - ./my-broker.properties:/opt/kafka/config/my-broker.properties:ro
     depends_on:
       controller-1000:
@@ -216,19 +216,5 @@ networks:
   kafka-network:
     driver: bridge
     name: kafka-network
-
-volumes:
-  controller-1000-data:
-    name: controller-1000-data
-  controller-1001-data:
-    name: controller-1001-data
-  controller-1002-data:
-    name: controller-1002-data
-  broker-0-data:
-    name: broker-0-data
-  broker-1-data:
-    name: broker-1-data
-  broker-2-data:
-    name: broker-2-data
 
 # Made with Bob
