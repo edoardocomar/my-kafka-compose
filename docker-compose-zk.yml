@@ -23,6 +23,7 @@ services:
       - "12181:2181"
     volumes:
       - zookeeper-1-data:/var/lib/zookeeper/data
+      - ./my-zookeeper.properties:/opt/kafka/config/my-zookeeper.properties:ro
     healthcheck:
       test: ["CMD-SHELL", "nc -z localhost 2181 || exit 1"]
       interval: 10s
@@ -45,6 +46,7 @@ services:
       - "12182:2181"
     volumes:
       - zookeeper-2-data:/var/lib/zookeeper/data
+      - ./my-zookeeper.properties:/opt/kafka/config/my-zookeeper.properties:ro
     healthcheck:
       test: ["CMD-SHELL", "nc -z localhost 2181 || exit 1"]
       interval: 10s
@@ -67,6 +69,7 @@ services:
       - "12183:2181"
     volumes:
       - zookeeper-3-data:/var/lib/zookeeper/data
+      - ./my-zookeeper.properties:/opt/kafka/config/my-zookeeper.properties:ro
     healthcheck:
       test: ["CMD-SHELL", "nc -z localhost 2181 || exit 1"]
       interval: 10s
