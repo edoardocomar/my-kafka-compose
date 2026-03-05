@@ -30,7 +30,8 @@ controller.quorum.voters=$CONTROLLER_QUORUM_VOTERS
 
 # Listeners
 listeners=CONTROLLER://:9093
-
+# Listener configuration
+controller.listener.names=CONTROLLER
 # Log directories
 log.dirs=$DATA_DIR
 EOF
@@ -51,6 +52,11 @@ elif [ "$PROCESS_ROLE" = "broker" ]; then
 process.roles=$PROCESS_ROLE
 node.id=$NODE_ID
 controller.quorum.voters=$CONTROLLER_QUORUM_VOTERS
+
+# Listener configuration
+controller.listener.names=CONTROLLER
+listener.security.protocol.map=INTERBROKER:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+inter.broker.listener.name=INTERBROKER
 
 # Listeners
 listeners=INTERBROKER://:9092,EXTERNAL://:9093

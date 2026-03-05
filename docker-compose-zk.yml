@@ -22,7 +22,7 @@ services:
     ports:
       - "12181:2181"
     volumes:
-      - zookeeper-1-data:/var/lib/zookeeper/data
+      - ./data/v3.9.2-ZKmode/zookeeper-1:/var/lib/zookeeper/data
       - ./my-zookeeper.properties:/opt/kafka/config/my-zookeeper.properties:ro
     healthcheck:
       test: ["CMD-SHELL", "nc -z localhost 2181 || exit 1"]
@@ -45,7 +45,7 @@ services:
     ports:
       - "12182:2181"
     volumes:
-      - zookeeper-2-data:/var/lib/zookeeper/data
+      - ./data/v3.9.2-ZKmode/zookeeper-2:/var/lib/zookeeper/data
       - ./my-zookeeper.properties:/opt/kafka/config/my-zookeeper.properties:ro
     healthcheck:
       test: ["CMD-SHELL", "nc -z localhost 2181 || exit 1"]
@@ -68,7 +68,7 @@ services:
     ports:
       - "12183:2181"
     volumes:
-      - zookeeper-3-data:/var/lib/zookeeper/data
+      - ./data/v3.9.2-ZKmode/zookeeper-3:/var/lib/zookeeper/data
       - ./my-zookeeper.properties:/opt/kafka/config/my-zookeeper.properties:ro
     healthcheck:
       test: ["CMD-SHELL", "nc -z localhost 2181 || exit 1"]
@@ -88,7 +88,7 @@ services:
     ports:
       - "29092:9093"
       - "29990:29990"
-      - "5010:5005"
+      - "5020:5005"
     environment:
       NODE_ID: 0
       PROCESS_ROLE: broker
@@ -99,7 +99,7 @@ services:
       KAFKA_DEBUG: *debug-enabled
       JAVA_DEBUG_PORT: *debug-port
     volumes:
-      - zk-broker-0-data:/var/lib/kafka/data
+      - ./data/v3.9.2-ZKmode/zk-broker-0:/var/lib/kafka/data
       - ./my-broker-zk.properties:/opt/kafka/config/my-broker-zk.properties:ro
     depends_on:
       zookeeper-1:
@@ -126,7 +126,7 @@ services:
     ports:
       - "29093:9093"
       - "29991:29991"
-      - "5011:5005"
+      - "5021:5005"
     environment:
       NODE_ID: 1
       PROCESS_ROLE: broker
@@ -137,7 +137,7 @@ services:
       KAFKA_DEBUG: *debug-enabled
       JAVA_DEBUG_PORT: *debug-port
     volumes:
-      - zk-broker-1-data:/var/lib/kafka/data
+      - ./data/v3.9.2-ZKmode/zk-broker-1:/var/lib/kafka/data
       - ./my-broker-zk.properties:/opt/kafka/config/my-broker-zk.properties:ro
     depends_on:
       zookeeper-1:
@@ -164,7 +164,7 @@ services:
     ports:
       - "29094:9093"
       - "29992:29992"
-      - "5012:5005"
+      - "5022:5005"
     environment:
       NODE_ID: 2
       PROCESS_ROLE: broker
@@ -175,7 +175,7 @@ services:
       KAFKA_DEBUG: *debug-enabled
       JAVA_DEBUG_PORT: *debug-port
     volumes:
-      - zk-broker-2-data:/var/lib/kafka/data
+      - ./data/v3.9.2-ZKmode/zk-broker-2:/var/lib/kafka/data
       - ./my-broker-zk.properties:/opt/kafka/config/my-broker-zk.properties:ro
     depends_on:
       zookeeper-1:
@@ -194,17 +194,3 @@ networks:
   kafka-zk-network:
     driver: bridge
     name: kafka-zk-network
-
-volumes:
-  zookeeper-1-data:
-    name: zookeeper-1-data
-  zookeeper-2-data:
-    name: zookeeper-2-data
-  zookeeper-3-data:
-    name: zookeeper-3-data
-  zk-broker-0-data:
-    name: zk-broker-0-data
-  zk-broker-1-data:
-    name: zk-broker-1-data
-  zk-broker-2-data:
-    name: zk-broker-2-data
